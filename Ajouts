@@ -1,0 +1,9 @@
+-Ajouter des salons "/salonadd"
+-supprimer des salons"/salondelete"
+-suppression des salons ajoutés pendant la mise en route du serveur à l'extinction
+OK -commande "/salonlist" pour voir la liste des salons
+OK -commande "/users" pour voir la liste des utilisateurs
+-/serverstop pr arreter le serveur
+-empecher d avoir 2 personnes avec le meme pseudo
+-afficher les commandes utilisées sur l'interface admin
+-recuperer message avant connexion

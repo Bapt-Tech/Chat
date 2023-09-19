@@ -5,11 +5,13 @@ import re
 def handle_client(client_socket, client_address):
     try:
         username = client_socket.recv(1024).decode('utf-8')
+
         print(f"{username} a rejoint le chat depuis {client_address[0]}:{client_address[1]}")
 
         # Demander à l'utilisateur de choisir un salon
-        client_socket.send("Liste des salons: Salon1, Salon2".encode('utf-8'))
+        client_socket.send("Liste des salons : Salon1, Salon2".encode('utf-8'))
         selected_channel = client_socket.recv(1024).decode('utf-8')
+        usernames.append(username)
 
         if selected_channel not in channels:
             channels[selected_channel] = []
@@ -23,7 +25,13 @@ def handle_client(client_socket, client_address):
                 break
             if message.lower() == '/exit':
                 break
-            if message.startswith('/join'):
+            if message.lower() == '/salonlist':
+                STRchannels = ' '.join(channels)
+                client_socket.send(f"{STRchannels}".encode('utf-8'))
+            if message.lower() == '/users':
+                STRusernames = ' '.join(usernames)
+                client_socket.send(f"{STRusernames}".encode('utf-8'))
+            elif message.startswith('/join'):
                 new_channel = message.split()[1]
                 if new_channel in channels:
                     channels[selected_channel].remove((username, client_socket))
@@ -36,16 +44,6 @@ def handle_client(client_socket, client_address):
                 recipient, _, message = message.partition(' ')
                 recipient = recipient[1:]  # Supprimer le @ du nom d'utilisateur du destinataire
                 send_private_message(username, recipient, message)
-            elif message.startswith('/add'):
-                new_channel = message.split()[1]
-                add_channel(new_channel)
-                client_socket.send(f"Le salon {new_channel} a été ajouté.".encode('utf-8'))
-            elif message.startswith('/remove'):
-                channel_to_remove = message.split()[1]
-                remove_channel(channel_to_remove, client_socket)
-            elif message.startswith('/rename'):
-                _, old_channel_name, new_channel_name = message.split()
-                rename_channel(old_channel_name, new_channel_name, client_socket)
             else:
                 print(f"{username} ({selected_channel}): {message}")
                 broadcast_message(f"{username} ({selected_channel}): {message}", client_socket, selected_channel)
@@ -80,19 +78,6 @@ def send_private_message(sender_username, recipient_username, message):
         except:
             print("Erreur lors de l'envoi du message privé")
 
-def add_channel(new_channel_name):
-    channels[new_channel_name] = []
-
-def remove_channel(channel_name, client_socket):
-    if channel_name in channels:
-        del channels[channel_name]
-        broadcast_message(f"Le salon {channel_name} a été supprimé.", client_socket, "Salon1")  # Vous pouvez choisir le salon de notification ici
-
-def rename_channel(old_channel_name, new_channel_name, client_socket):
-    if old_channel_name in channels:
-        channels[new_channel_name] = channels.pop(old_channel_name)
-        broadcast_message(f"Le salon {old_channel_name} a été renommé en {new_channel_name}.", client_socket, "Salon1")  # Vous pouvez choisir le salon de notification ici
-
 def server_shutdown():
     for channel in channels:
         for client in channels[channel]:
@@ -116,6 +101,7 @@ def start_server():
         client_thread.start()
 
 clients = []
+usernames = []
 channels = {
     "Salon1": [],
     "Salon2": []

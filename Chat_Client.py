@@ -34,6 +34,10 @@ def start_client():
             recipient, _, message = message.partition(' ')
             recipient = recipient[1:]  # Supprimer le @ du nom d'utilisateur du destinataire
             client.send(f"@{recipient} {message}".encode('utf-8'))
+        elif message.lower() == '/salonlist':
+            client.send(message.encode('utf-8'))
+        elif message.lower() == '/users':
+            client.send(message.encode('utf-8'))
         elif not message.startswith('/'):
             client.send(message.encode('utf-8'))
 
