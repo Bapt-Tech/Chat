@@ -6,4 +6,3 @@ OK -commande "/users" pour voir la liste des utilisateurs
 -/serverstop pr arreter le serveur
 -empecher d avoir 2 personnes avec le meme pseudo
 -afficher les commandes utilisées sur l'interface admin
--recuperer message avant connexion
