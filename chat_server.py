@@ -26,15 +26,19 @@ def handle_client(client_socket, client_address):
             if message.lower() == '/exit':
                 break
             if message.lower() == '/salonlist':
+                print(username, " a utilisé la commande /salonlist")
                 STRchannels = ' '.join(channels)
                 client_socket.send(f"{STRchannels}".encode('utf-8'))
             if message.lower() == '/users':
+                print(username, " a utilisé la commande /users")
                 STRusernames = ' '.join(usernames)
-                client_socket.send(f"{STRusernames}".encode('utf-8'))
+                STRmessageusernames = ("Utilisateurs connectés depuis le démarrage du serveur : ", STRusernames)
+                client_socket.send(f"{STRmessageusernames}".encode('utf-8'))
             elif message.startswith('/join'):
                 new_channel = message.split()[1]
                 if new_channel in channels:
                     channels[selected_channel].remove((username, client_socket))
+                    print(username, " a utilisé la commande /join et a rejoint le salon ", selected_channel, ".")
                     selected_channel = new_channel
                     channels[selected_channel].append((username, client_socket))
                     client_socket.send(f"Vous avez rejoint le salon {selected_channel}".encode('utf-8'))
@@ -44,6 +48,7 @@ def handle_client(client_socket, client_address):
                 recipient, _, message = message.partition(' ')
                 recipient = recipient[1:]  # Supprimer le @ du nom d'utilisateur du destinataire
                 send_private_message(username, recipient, message)
+                print(Username, " à envoyé un message privé à ", recipient)
             else:
                 print(f"{username} ({selected_channel}): {message}")
                 broadcast_message(f"{username} ({selected_channel}): {message}", client_socket, selected_channel)
